@@ -27,3 +27,9 @@
 *.exe
 *.out
 *.app
+
+# Platform IO
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
