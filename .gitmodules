@@ -1,0 +1,3 @@
+[submodule "lib/MicroTasks"]
+	path = lib/MicroTasks
+	url = https://github.com/jeremypoulter/MicroTasks.git
