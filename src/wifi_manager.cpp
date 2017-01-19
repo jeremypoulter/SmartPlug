@@ -5,8 +5,12 @@
 #include "dns.h"
 #include "debug.h"
 
+#ifndef WIFI_CONNECTION_LED
 #define WIFI_CONNECTION_LED       0
+#endif
+#ifndef WIFI_CONNECTION_LED_STATE
 #define WIFI_CONNECTION_LED_STATE LOW
+#endif
 
 WiFiManagerTask::WiFiManagerTask(String hostname, String ssid, String password) :
   scanCompleteEvent(),

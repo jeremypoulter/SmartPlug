@@ -29,10 +29,22 @@
 #include "web_ui.h"
 #include "wifi_manager.h"
 #include "config.h"
+#include "switch.h"
+
+#ifndef POWER_LED
+#define POWER_LED 14
+#endif
+#ifndef RELAY_COMTR
+#define RELAY_COMTR 13
+#endif
+#ifndef BUTTON_PIN
+#define BUTTON_PIN 5
+#endif
 
 EspOtaTask espOta;
 WiFiManagerTask wifi;
 WebUiTask webUi(wifi);
+SwitchTask switchTask(POWER_LED, BUTTON_PIN, RELAY_COMTR);
 
 class ConfigManagerTask : public MicroTasks::Task
 {
@@ -83,6 +95,7 @@ void setup() {
   SPIFFS.begin();
   Config.begin();
 
+  MicroTask.startTask(switchTask);
   MicroTask.startTask(configManager);
   MicroTask.startTask(wifi);
   MicroTask.startTask(espOta);
