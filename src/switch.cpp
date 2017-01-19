@@ -3,6 +3,13 @@
 #include "switch.h"
 #include "debug.h"
 
+#ifndef SWITCH_RELAY_ON_STATE
+#define SWITCH_RELAY_ON_STATE LOW
+#endif
+#ifndef SWITCH_LED_ON_STATE
+#define SWITCH_LED_ON_STATE LOW
+#endif
+
 SwitchTask::SwitchTask(int ledPin, int buttonPin, int relayPin) :
   ledPin(ledPin),
   buttonPin(buttonPin),
@@ -46,8 +53,8 @@ void SwitchTask::setSwitchState(int state)
   {
     DBUGF("Turning switch %s", state ? "on" : "off");
     switchState = state;
-    digitalWrite(ledPin, !switchState);
-    digitalWrite(relayPin, switchState);
+    digitalWrite(ledPin, switchState ? SWITCH_LED_ON_STATE : !SWITCH_LED_ON_STATE);
+    digitalWrite(relayPin, switchState ? SWITCH_RELAY_ON_STATE : !SWITCH_RELAY_ON_STATE);
     Trigger();
   }
 }
