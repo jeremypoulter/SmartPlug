@@ -35,11 +35,14 @@ env:
   - PIO_ENV=huzzah_ota
   - PIO_ENV=esp01
   - PIO_ENV=esp12e
+  - PIO_ENV=hfw02
 
 cache:
     directories:
         - "~/.platformio"
 install:
     - pip install -U platformio
+    - platformio platform install https://github.com/jeremypoulter/platform-espressif8266.git#feature/40mhz
+
 script:
     - platformio run -e $PIO_ENV
