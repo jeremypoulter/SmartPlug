@@ -126,14 +126,10 @@ function SettingsViewModel(app)
   var self = this;
 
   self.wifi = ko.observable(new WiFiViewModel());
-  self.config = ko.observable(new ConfigViewModel());
+  self.wifi().update();
 
-  app.isSettings.subscribe(function (selected) {
-      if (selected) {
-          self.wifi().update();
-          self.config().update();
-      }
-  });
+  self.config = ko.observable(new ConfigViewModel());
+  self.config().update();
 
   self.setSsid = function (item) {
       self.config().wifiClientSsid(item.ssid());
@@ -146,6 +142,7 @@ function AboutViewModel(app)
   var self = this;
 
   self.info = ko.observable(new InfoViewModel());
+  self.info().update();
 
   self.reboot = function () {
     $.post(baseEndpoint+'/reboot', function (data) {
@@ -159,51 +156,17 @@ function AboutViewModel(app)
         type: 'DELETE'
     });
   };
-
-  app.isAbout.subscribe(function (selected) {
-      if (selected) {
-          self.info().update();
-      }
-  });
 }
 
 function ESPlugViewModel()
 {
     var self = this;
 
-    // Data
-    self.tab = ko.observable(null);
-
-    // Derived data
-    self.isSettings = ko.pureComputed(function () {
-        return this.tab() == 'settings';
-    }, this);
-    self.isAbout = ko.pureComputed(function () {
-        return this.tab() == 'about';
-    }, this);
-
-    // Behaviours
-    self.goToTab = function (tab) { location.hash = tab; };
-
     // Settings
     self.settings = ko.observable(new SettingsViewModel(self));
 
     // Aboud
     self.about = ko.observable(new AboutViewModel(self));
-
-    // Client-side routes
-    var sammy = Sammy(function ()
-    {
-        this.get('#:tab', function () {
-            self.tab(this.params.tab);
-        });
-
-        this.get('', function () {
-            this.redirect('#settings');
-        });
-    });
-
-    sammy.run();
 }
 
 // Activates knockout.js

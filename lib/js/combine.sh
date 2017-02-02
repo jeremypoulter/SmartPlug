@@ -28,5 +28,4 @@ fi
 cat $LIB_DIR/jquery.slim.min.js \
     $LIB_DIR/knockout.min.js \
     $LIB_DIR/knockout.mapping.min.js \
-    $LIB_DIR/sammy.min.js \
     | $COMP > $SRC_DIR/lib.js$OUT
