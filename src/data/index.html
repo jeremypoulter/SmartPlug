@@ -10,142 +10,91 @@
 
     <title>ESPlug</title>
 
-    <link href="lib.css" rel="stylesheet"/>
     <link href="esplug.css" rel="stylesheet"/>
   </head>
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">ESPlug</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li data-bind="css: { active: isSettings }">
-              <a href="#settings">Settings</a>
-            </li>
-            <li data-bind="css: { active: isAbout }">
-              <a href="#about">About</a>
-            </li>
-          </ul>
-        </div><!--/.nav-collapse -->
+    <div id="page">
+      <div class="box">
+        <h1>ESPlug</h1>
+        <h3>WiFi ESP8266 Plug</h3>
       </div>
-    </nav>
 
-    <div class="container"  data-bind="visible: isSettings, with: settings">
+      <div class="container" data-bind="with: settings">
+        <h2>WiFi</h2>
+        <div class="itembody-wrapper">
+          <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Network</th>
+                  <th>RSSI dBm</th>
+                </tr>
+              </thead>
+              <tbody data-bind="foreach: wifi().scan().results()">
+                <tr data-bind="click: $root.settings().setSsid">
+                  <td data-bind="text: ssid"></td>
+                  <td data-bind="text: rssi"></td>
+                </tr>
+              </tbody>
+          </table>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Status:</th>
+                <td data-bind="text: wifi().status"></td>
+              </tr>
+              <tr>
+                <th>IP Address:</th>
+                <td data-bind="text: wifi().localIP"></td>
+              </tr>
+              <tr>
+                <th>Netmask:</th>
+                <td data-bind="text: wifi().subnetMask"></td>
+              </tr>
+              <tr>
+                <th>Gateway:</th>
+                <td data-bind="text: wifi().gatewayIP"></td>
+              </tr>
+            </tbody>
+          </table>
 
-      <div>
-        <h1>Settings</h1>
-
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">WiFi</h3>
-          </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-md-6">
-                  <table class="table table-hover">
-                      <thead>
-                        <tr>
-                            <th>Network</th>
-                            <th>RSSI dBm</th>
-                        </tr>
-                      </thead>
-                      <tbody data-bind="foreach: wifi().scan().results()">
-                        <tr data-bind="click: $root.settings().setSsid">
-                          <td data-bind="text: ssid"></td>
-                          <td data-bind="text: rssi"></td>
-                        </tr>
-                      </tbody>
-                  </table>
-              </div>
-              <div class="col-md-6">
-
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <th>Status:</th>
-                      <td data-bind="text: wifi().status"></td>
-                    </tr>
-                    <tr>
-                      <th>IP Address:</th>
-                      <td data-bind="text: wifi().localIP"></td>
-                    </tr>
-                    <tr>
-                      <th>Netmask:</th>
-                      <td data-bind="text: wifi().subnetMask"></td>
-                    </tr>
-                    <tr>
-                      <th>Gateway:</th>
-                      <td data-bind="text: wifi().gatewayIP"></td>
-                    </tr>
-                  </tbody>
-                </table>
+          <form class="form-horizontal" data-bind="with: config">
+            <div class="form-group">
+              <label for="hostname" class="col-sm-2 control-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hostname" placeholder="esplug" data-bind="textInput: wifiHostname">
               </div>
             </div>
-
-            <form class="form-horizontal" data-bind="with: config">
-              <div class="form-group">
-                <label for="hostname" class="col-sm-2 control-label">Name</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="hostname" placeholder="esplug" data-bind="textInput: wifiHostname">
-                </div>
+            <div class="form-group">
+              <label for="clientSsid" class="col-sm-2 control-label">SSID</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="clientSsid" placeholder="SSID" data-bind="textInput: wifiClientSsid">
               </div>
-              <div class="form-group">
-                <label for="clientSsid" class="col-sm-2 control-label">SSID</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="clientSsid" placeholder="SSID" data-bind="textInput: wifiClientSsid">
-                </div>
+            </div>
+            <div class="form-group">
+              <label for="clientPassword" class="col-sm-2 control-label">Password</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="clientPassword" placeholder="Password" data-bind="textInput: wifiClientPassword">
               </div>
-              <div class="form-group">
-                <label for="clientPassword" class="col-sm-2 control-label">Password</label>
-                <div class="col-sm-10">
-                  <input type="password" class="form-control" id="clientPassword" placeholder="Password" data-bind="textInput: wifiClientPassword">
-                </div>
-              </div>
-              <button type="submit" class="btn btn-default" data-bind="click: save">Connect</button>
-            </form>
-          </div>
+            </div>
+            <button type="submit" class="btn btn-default" data-bind="click: save">Connect</button>
+          </form>
         </div>
       </div>
 
     </div><!-- /.container -->
 
-    <div class="container"  data-bind="visible: isAbout, with: about">
+    <div class="container"  data-bind="with: about">
+      <h2>About</h2>
 
-      <div>
-        <h1>About</h1>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">System</h3>
-        </div>
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-2 align-right"><b>Version:</b></div>
-            <div class="col-md-10" data-bind="text: info().version"></div>
-          </div>
-          <div class="row">
-            <div class="col-md-2 align-right"><b>Free RAM:</b></div>
-            <div class="col-md-10" data-bind="text: info().heap"></div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 align-right">
-              <button class="btn btn-info" data-bind="click: reboot">Reboot</button>
-              <button class="btn btn-info" data-bind="click: factoryReset">Factory Reset</button>
-            </div>
-          </div>
+      <div class="itembody-wrapper">
+        <p><b>Version:</b> <span data-bind="text: info().version"></span></p>
+        <p><b>Free RAM:</b> <span data-bind="text: info().heap"></span></p>
+        <div class="col-md-12 align-right">
+          <button class="btn btn-info" data-bind="click: reboot">Reboot</button>
+          <button class="btn btn-info" data-bind="click: factoryReset">Factory Reset</button>
         </div>
       </div>
-
     </div><!-- /.container -->
 
     <script src="lib.js"></script>
