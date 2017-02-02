@@ -80,22 +80,20 @@
             <button type="submit" class="btn btn-default" data-bind="click: save">Connect</button>
           </form>
         </div>
-      </div>
+      </div><!-- /.container -->
 
-    </div><!-- /.container -->
-
-    <div class="container"  data-bind="with: about">
-      <h2>About</h2>
-
-      <div class="itembody-wrapper">
-        <p><b>Version:</b> <span data-bind="text: info().version"></span></p>
-        <p><b>Free RAM:</b> <span data-bind="text: info().heap"></span></p>
-        <div class="col-md-12 align-right">
-          <button class="btn btn-info" data-bind="click: reboot">Reboot</button>
-          <button class="btn btn-info" data-bind="click: factoryReset">Factory Reset</button>
+      <div class="container" data-bind="with: about">
+        <h2>About</h2>
+        <div class="itembody-wrapper">
+          <p><b>Version:</b> <span data-bind="text: info().version"></span></p>
+          <p><b>Free RAM:</b> <span data-bind="text: info().heap"></span></p>
+          <div class="col-md-12 align-right">
+            <button class="btn btn-info" data-bind="click: reboot">Reboot</button>
+            <button class="btn btn-info" data-bind="click: factoryReset">Factory Reset</button>
+          </div>
         </div>
-      </div>
-    </div><!-- /.container -->
+      </div><!-- /.container -->
+    </div>
 
     <script src="lib.js"></script>
     <script src="esplug.js"></script>
