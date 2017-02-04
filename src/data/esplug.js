@@ -121,6 +121,33 @@ function ConfigViewModel()
     };
 }
 
+function SwitchViewModel()
+{
+    var self = this;
+    self.socket = false;
+
+    self.state = ko.observable(false);
+    self.state.subscribe(function (state) {
+      if(false !== self.socket) {
+        self.socket.send(JSON.stringify({state: state}));
+      }
+    });
+
+    self.connect = function () {
+      self.socket = new WebSocket('ws://'+baseHost+'/ws');
+      self.socket.onopen = function (ev) {
+          console.log(ev);
+      };
+      self.socket.onclose = function (ev) {
+          console.log(ev);
+      };
+      self.socket.onmessage = function (msg) {
+          console.log(msg);
+          ko.mapping.fromJS(msg.data, self);
+      };
+    };
+}
+
 function SettingsViewModel(app)
 {
   var self = this;
@@ -129,7 +156,10 @@ function SettingsViewModel(app)
   self.wifi().update();
 
   self.config = ko.observable(new ConfigViewModel());
-  self.config().update();
+  self.config().connect();
+
+  self.switch = ko.observable(new SwitchViewModel());
+  self.switch().update();
 
   self.setSsid = function (item) {
       self.config().wifiClientSsid(item.ssid());

@@ -28,6 +28,7 @@ private:
   static void onNotFound(AsyncWebServerRequest *request);
 
   static void handleCors(AsyncWebServerResponse *response);
+  static void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 
 public:
   WebUiTask(WiFiManagerTask &wifi);
