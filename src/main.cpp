@@ -43,8 +43,8 @@
 
 EspOtaTask espOta;
 WiFiManagerTask wifi;
-WebUiTask webUi(wifi);
 SwitchTask switchTask(POWER_LED, BUTTON_PIN, RELAY_COMTR);
+WebUiTask webUi(wifi, switchTask);
 
 class ConfigManagerTask : public MicroTasks::Task
 {

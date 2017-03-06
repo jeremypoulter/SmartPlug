@@ -121,7 +121,7 @@ function ConfigViewModel()
     };
 }
 
-function SwitchViewModel()
+function PlugViewModel(app)
 {
     var self = this;
     self.socket = false;
@@ -156,10 +156,7 @@ function SettingsViewModel(app)
   self.wifi().update();
 
   self.config = ko.observable(new ConfigViewModel());
-  self.config().connect();
-
-  self.switch = ko.observable(new SwitchViewModel());
-  self.switch().update();
+  self.config().update();
 
   self.setSsid = function (item) {
       self.config().wifiClientSsid(item.ssid());
@@ -191,6 +188,10 @@ function AboutViewModel(app)
 function ESPlugViewModel()
 {
     var self = this;
+
+    // Switch
+    self.plug = ko.observable(new PlugViewModel(self));
+    self.plug().connect();
 
     // Settings
     self.settings = ko.observable(new SettingsViewModel(self));

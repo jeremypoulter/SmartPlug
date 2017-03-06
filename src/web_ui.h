@@ -8,6 +8,7 @@
 #include <MicroTasksEventListener.h>
 
 #include "wifi_manager.h"
+#include "switch.h"
 
 class WebUiTask;
 class WebUiTask : public MicroTasks::Task
@@ -19,6 +20,7 @@ private:
   AsyncWebSocket ws;
   MicroTasks::EventListener scanCompleteEvent;
   WiFiManagerTask &wifi;
+  SwitchTask &switchTask;
 
   AsyncWebServerRequest *scanRequest;
 
@@ -31,7 +33,7 @@ private:
   static void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 
 public:
-  WebUiTask(WiFiManagerTask &wifi);
+  WebUiTask(WiFiManagerTask &wifi, SwitchTask &switchTask);
   void setup();
   unsigned long loop(MicroTasks::WakeReason reason);
 };

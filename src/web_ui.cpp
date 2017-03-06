@@ -14,11 +14,12 @@
 
 WebUiTask *WebUiTask::self = NULL;
 
-WebUiTask::WebUiTask(WiFiManagerTask &wifi) :
+WebUiTask::WebUiTask(WiFiManagerTask &wifi, SwitchTask &switchTask) :
   server(80),
   ws("/ws"),
   scanCompleteEvent(this),
   wifi(wifi),
+  switchTask(switchTask),
   reboot(false),
   enableCors(true),
   MicroTasks::Task()
@@ -281,7 +282,14 @@ void WebUiTask::onNotFound(AsyncWebServerRequest *request)
 void WebUiTask::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
   if(type == WS_EVT_CONNECT) {
     DBUGF("ws[%s][%u] connect", server->url(), client->id());
-    client->printf("Connected %u)", client->id());
+
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["state"] = self->switchTask.getSwitchState();
+
+    String json;
+    root.printTo(json);
+    client->text(json);
     client->ping();
   } else if(type == WS_EVT_DISCONNECT) {
     DBUGF("ws[%s][%u] disconnect: %u", server->url(), client->id());
@@ -300,8 +308,10 @@ void WebUiTask::onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client
       DBUGF("%.*s\n", len, (char *)data);
 
       if(info->opcode == WS_TEXT) {
+        DynamicJsonBuffer buffer;
+        JsonObject& root = buffer.parseObject((char *)data, len);
+        self->switchTask.setSwitchState(root["state"]);
       }
-
     } else {
       // TODO: handle messages that are comprised of multiple frames or the frame is split into multiple packets
     }
