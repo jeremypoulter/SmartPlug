@@ -19,6 +19,7 @@ private:
   AsyncWebServer server;
   AsyncWebSocket ws;
   MicroTasks::EventListener scanCompleteEvent;
+  MicroTasks::EventListener switchEvent;
   WiFiManagerTask &wifi;
   SwitchTask &switchTask;
 

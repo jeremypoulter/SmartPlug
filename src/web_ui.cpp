@@ -18,6 +18,7 @@ WebUiTask::WebUiTask(WiFiManagerTask &wifi, SwitchTask &switchTask) :
   server(80),
   ws("/ws"),
   scanCompleteEvent(this),
+  switchEvent(this),
   wifi(wifi),
   switchTask(switchTask),
   reboot(false),
@@ -25,6 +26,7 @@ WebUiTask::WebUiTask(WiFiManagerTask &wifi, SwitchTask &switchTask) :
   MicroTasks::Task()
 {
   wifi.onScanComplete(scanCompleteEvent);
+  switchTask.onSwitchStateChange(switchEvent);
 
   self = this;
 }
@@ -187,35 +189,49 @@ unsigned long WebUiTask::loop(MicroTasks::WakeReason reason)
 {
   if(WakeReason_Event == reason)
   {
-    int n = WiFi.scanComplete();
-    if(NULL != WebUiTask::scanRequest && n != WIFI_SCAN_RUNNING)
+    if(scanCompleteEvent.IsTriggered())
     {
-      DBUGF("WiFi scan complete");
-
-      AsyncResponseStream *response = WebUiTask::scanRequest->beginResponseStream("application/json");
-      handleCors(response);
-      DynamicJsonBuffer jsonBuffer;
-
-      JsonArray& root = jsonBuffer.createArray();
-      DBUGF("%d networks found", n);
-      for (int i = 0; i < n; ++i)
+      int n = WiFi.scanComplete();
+      if(NULL != WebUiTask::scanRequest && n != WIFI_SCAN_RUNNING)
       {
-        JsonObject& ssid = jsonBuffer.createObject();
-        ssid["ssid"] = WiFi.SSID(i);
-        int enc = WiFi.encryptionType(i);
-        ssid["encryptionType"] = ENC_TYPE_WEP == enc ? "ENC_TYPE_WEP" :
-                                 ENC_TYPE_TKIP == enc ? "ENC_TYPE_TKIP" :
-                                 ENC_TYPE_CCMP == enc ? "ENC_TYPE_CCMP" :
-                                 ENC_TYPE_NONE == enc ? "ENC_TYPE_NONE" :
-                                 ENC_TYPE_AUTO == enc ? "ENC_TYPE_AUTO" :
-                                 "UNKNOWN";
-        ssid["rssi"] = WiFi.RSSI(i);
-        root.add(ssid);
-      }
+        DBUGF("WiFi scan complete");
 
-      root.printTo(*response);
-      WebUiTask::scanRequest->send(response);
-      WebUiTask::scanRequest = NULL;
+        AsyncResponseStream *response = WebUiTask::scanRequest->beginResponseStream("application/json");
+        handleCors(response);
+        DynamicJsonBuffer jsonBuffer;
+
+        JsonArray& root = jsonBuffer.createArray();
+        DBUGF("%d networks found", n);
+        for (int i = 0; i < n; ++i)
+        {
+          JsonObject& ssid = jsonBuffer.createObject();
+          ssid["ssid"] = WiFi.SSID(i);
+          int enc = WiFi.encryptionType(i);
+          ssid["encryptionType"] = ENC_TYPE_WEP == enc ? "ENC_TYPE_WEP" :
+                                   ENC_TYPE_TKIP == enc ? "ENC_TYPE_TKIP" :
+                                   ENC_TYPE_CCMP == enc ? "ENC_TYPE_CCMP" :
+                                   ENC_TYPE_NONE == enc ? "ENC_TYPE_NONE" :
+                                   ENC_TYPE_AUTO == enc ? "ENC_TYPE_AUTO" :
+                                   "UNKNOWN";
+          ssid["rssi"] = WiFi.RSSI(i);
+          root.add(ssid);
+        }
+
+        root.printTo(*response);
+        WebUiTask::scanRequest->send(response);
+        WebUiTask::scanRequest = NULL;
+      }
+    }
+    if(switchEvent.IsTriggered())
+    {
+      StaticJsonBuffer<300> jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["state"] = self->switchTask.getSwitchState();
+
+      String json;
+      root.printTo(json);
+
+      ws.textAll(json);
     }
   }
 

@@ -126,7 +126,10 @@ function PlugViewModel(app)
     var self = this;
     self.socket = false;
 
-    self.state = ko.observable(false);
+    ko.mapping.fromJS({
+      'state': 1
+    }, {}, self);
+
     self.state.subscribe(function (state) {
       if(false !== self.socket) {
         self.socket.send(JSON.stringify({state: state}));
@@ -143,7 +146,7 @@ function PlugViewModel(app)
       };
       self.socket.onmessage = function (msg) {
           console.log(msg);
-          ko.mapping.fromJS(msg.data, self);
+          ko.mapping.fromJSON(msg.data, self);
       };
     };
 }
